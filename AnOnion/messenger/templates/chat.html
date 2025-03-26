@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnOnion</title>
+</head>
+<body>
+    <div id="chat-box">
+        <!-- Повідомлення будуть тут -->
+    </div>
+
+    <textarea id="message-input" placeholder="Напишіть повідомлення..."></textarea>
+    <button id="send-message">Надіслати</button>
+
+    <script>
+        const chatSocket = new WebSocket(
+            'ws://' + window.location.host + '/ws/chat/'
+        );
+
+        chatSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            document.querySelector('#chat-box').innerHTML += `<p>${data.message}</p>`;
+        };
+
+        document.querySelector('#send-message').onclick = function(e) {
+            const messageInputDom = document.querySelector('#message-input');
+            const message = messageInputDom.value;
+            chatSocket.send(JSON.stringify({
+                'message': message
+            }));
+            messageInputDom.value = '';  // Очищаємо поле введення
+        };
+    </script>
+</body>
+</html>
